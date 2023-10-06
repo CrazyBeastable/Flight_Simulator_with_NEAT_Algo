@@ -2,8 +2,8 @@ let clouds = [];
 let score = 0;
 let isJumping = 0;
 let frameShootRate = 0;
-let frameWTCSpawnRate = 0;
-let WTC = []; 
+let framebuildingSpawnRate = 0;
+let buildings = []; 
 
 function setup() {
     createCanvas(720,420);
@@ -27,13 +27,13 @@ function reset(){
     score = 0;
     isJumping = 0;
     frameShootRate = 0;
-    frameWTCSpawnRate = 0;
-    WTC = [];
+    framebuildingSpawnRate = 0;
+    buildings = [];
     clouds = [];
     playerSprite = loadImage('Assets/Plane.png');
     playerHeight = height/2;
-    wtcLowerSprite = loadImage('Assets/WorldTradeCenter(Cropped).png');
-    wtcUpperSprite = loadImage('Assets/WorldTradeCenter(Cropped)(HorizontalFlipped).png');
+    buildingLowerSprite = loadImage('Assets/Building(Cropped).png');
+    buildingUpperSprite = loadImage('Assets/Building(Cropped)(HorizontalFlipped).png');
     backgroundSprite = loadImage('Assets/sky background.jpg');
     cloudSprites = [loadImage('Assets/cloud1.jpg'),loadImage('Assets/cloud2.jpg'),loadImage('Assets/cloud3.jpg'),loadImage('Assets/cloud4.jpg'),loadImage('Assets/cloud5.jpg')];
     setClouds();
@@ -57,32 +57,32 @@ function draw() {
         }
     }
 
-    //spawn world trade centers
-    for(let wtc of WTC){
-        wtc.lowerTowerX-=8*(deltaTime/40);
-        wtc.upperTowerX-=8*(deltaTime/40);
-        wtc.upperStrikeZoneX-=8*(deltaTime/40);
-        wtc.lowerStrikeZoneX-=8*(deltaTime/40);
+    //spawn buildings
+    for(let building of buildings){
+        building.lowerTowerX-=8*(deltaTime/40);
+        building.upperTowerX-=8*(deltaTime/40);
+        building.upperStrikeZoneX-=8*(deltaTime/40);
+        building.lowerStrikeZoneX-=8*(deltaTime/40);
         fill(0,150,255);
-        image(wtcUpperSprite,wtc.upperTowerX,wtc.upperTowerY,width/5);
-        image(wtcLowerSprite,wtc.lowerTowerX,wtc.lowerTowerY,width/5);
+        image(buildingUpperSprite,building.upperTowerX,building.upperTowerY,width/5);
+        image(buildingLowerSprite,building.lowerTowerX,building.lowerTowerY,width/5);
     }
-    if(frameWTCSpawnRate%210 == 0){
-        createWTC();
-        frameWTCSpawnRate = 0;
+    if(framebuildingSpawnRate%210 == 0){
+        createbuilding();
+        framebuildingSpawnRate = 0;
     }
-    frameWTCSpawnRate++;
+    framebuildingSpawnRate++;
 
-    //delete out of bounds WTCs
-    for(let wtc of WTC){
-        if(wtc.upperTowerX<-200||wtc.lowerTowerX<-200){
-            WTC.splice(WTC.indexOf(wtc),1);
+    //delete out of bounds buildings
+    for(let building of buildings){
+        if(building.upperTowerX<-200||building.lowerTowerX<-200){
+            buildings.splice(buildings.indexOf(building),1);
         }
     }
 
     //check for collisions
-    for(let wtc of WTC){
-        if(dist(width/5,playerHeight,wtc.upperStrikeZoneX,wtc.upperStrikeZoneY)<85||dist(width/5,playerHeight,wtc.lowerStrikeZoneX,wtc.lowerStrikeZoneY)<100){
+    for(let building of buildings){
+        if(dist(width/5,playerHeight,building.upperStrikeZoneX,building.upperStrikeZoneY)<85||dist(width/5,playerHeight,building.lowerStrikeZoneX,building.lowerStrikeZoneY)<100){
             reset();
         }
     }
@@ -112,10 +112,10 @@ function draw() {
     }
 
     //increment score
-    for(wtc of WTC){
-        if(width/5 > wtc.upperTowerX+100){
-            score+=wtc.scorePoint;
-            wtc.scorePoint = 0;
+    for(let building of buildings){
+        if(width/5 > building.upperTowerX+100){
+            score+=building.scorePoint;
+            building.scorePoint = 0;
         }
     }
 
@@ -124,9 +124,9 @@ function draw() {
     text(score,15,25);//remaining
 }
 
-function createWTC(){
+function createbuilding(){
     let y = random(50,height-50);
-    let wtc = {
+    let building = {
         upperTowerX:width+100,
         upperTowerY:y-750,
         lowerTowerX:width+100,
@@ -137,5 +137,5 @@ function createWTC(){
         lowerStrikeZoneY:y+125+230-width/5,
         scorePoint:1
     }
-    WTC.push(wtc);
+    buildings.push(building);
 }
