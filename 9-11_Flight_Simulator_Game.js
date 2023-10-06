@@ -12,26 +12,14 @@ function setup() {
 
 }
 
-function Cloud(){
-    this.x = random(0,width+50);
-    this.y = random(0, height);
-    
-    this.display = function() {
-        stroke(255);
-        //strokeWeight(1);
-        fill(255);
-        ellipse(this.x, this.y, 24, 24);
-        ellipse(this.x+10,this.y+10,24,24);
-        ellipse(this.x+30,this.y+10,24,24);
-        ellipse(this.x+30,this.y-10,24,24);
-        ellipse(this.x+20,this.y-10,24,24);
-        ellipse(this.x+40,this.y,24,24);
-    }
-    
-    this.move = function() {
-        this.x = this.x -= 2 ;
-        this.y = this.y + random(-1, 1);
-      
+function setClouds(){
+    for(let i = 0; i<5; i++){
+        let cloud = {
+            no:i,
+            x:random(width,width+1000),
+            y:random(50,height-50)
+        }
+        clouds.push(cloud);
     }
 }
 
@@ -46,28 +34,28 @@ function reset(){
     playerHeight = height/2;
     wtcLowerSprite = loadImage('Assets/WorldTradeCenter(Cropped).png');
     wtcUpperSprite = loadImage('Assets/WorldTradeCenter(Cropped)(HorizontalFlipped).png');
-    for (var i = 0; i < 7; i++) {
-        clouds[i] = new Cloud();
-    }
+    backgroundSprite = loadImage('Assets/sky background.jpg');
+    cloudSprites = [loadImage('Assets/cloud1.jpg'),loadImage('Assets/cloud2.jpg'),loadImage('Assets/cloud3.jpg'),loadImage('Assets/cloud4.jpg'),loadImage('Assets/cloud5.jpg')];
+    setClouds();
     frameRate(60);
     rectMode(CENTER);
 }
 
 function draw() {
-    background(0,150,255);
+    image(backgroundSprite,0,0,width,height);
 
     //spawn clouds
-    for (var i = 0; i < clouds.length; i++) {
-        clouds[i].move();
-        clouds[i].display();
-    }
-    for (cloud of clouds){
-        if(cloud.x<-50){
-            cloud.x = width+100;
-            cloud.y = random(0,height);
+    for(let cloud of clouds){
+        //move cloud
+        cloud.x -= 5*(deltaTime/40);
+
+        //render cloud
+        image(cloudSprites[cloud.no],cloud.x+cloud.no*10,cloud.y,width/5,height/5);
+        if(cloud.x<-250){
+            cloud.x = random(width+50,width+200);
+            cloud.y = random(50,height-50);
         }
     }
-    
 
     //spawn world trade centers
     for(let wtc of WTC){
@@ -76,9 +64,6 @@ function draw() {
         wtc.upperStrikeZoneX-=8*(deltaTime/40);
         wtc.lowerStrikeZoneX-=8*(deltaTime/40);
         fill(0,150,255);
-        // noStroke();
-        // rect(wtc.upperStrikeZoneX,wtc.upperStrikeZoneY,width/5,width/5);
-        // rect(wtc.lowerStrikeZoneX,wtc.lowerStrikeZoneY,width/5,width/5);
         image(wtcUpperSprite,wtc.upperTowerX,wtc.upperTowerY,width/5);
         image(wtcLowerSprite,wtc.lowerTowerX,wtc.lowerTowerY,width/5);
     }
