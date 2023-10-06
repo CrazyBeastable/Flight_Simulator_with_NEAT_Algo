@@ -3,7 +3,7 @@ let score = 0;
 let isJumping = 0;
 let frameShootRate = 0;
 let frameWTCSpawnRate = 0;
-let WTC = [];
+let WTC = []; 
 
 function setup() {
     createCanvas(720,420);
