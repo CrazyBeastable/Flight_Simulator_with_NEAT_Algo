@@ -1,4 +1,5 @@
 let clouds = [];
+let buildingNo = 0;
 let framebuildingSpawnRate = 0;
 let buildings = []; 
 let players = [];
@@ -23,6 +24,7 @@ function setClouds(num=5){
 function reset(){
     player = [];
     framebuildingSpawnRate = 0;
+    buildingNo = 0;
     buildings = [];
     clouds = [];
     playerSprite = loadImage('Assets/Plane.png');
@@ -31,13 +33,14 @@ function reset(){
     backgroundSprite = loadImage('Assets/sky background.jpg');
     cloudSprites = [loadImage('Assets/cloud1.jpg'),loadImage('Assets/cloud2.jpg'),loadImage('Assets/cloud3.jpg'),loadImage('Assets/cloud4.jpg'),loadImage('Assets/cloud5.jpg')];
     setClouds();    //pass the number of clouds to print (default = 5)
-    createPlayers();    //pass the number of players (default = 1)
+    createPlayers(5);    //pass the number of players (default = 1)
     frameRate(60);
     rectMode(CENTER);
+    imageMode(CENTER);
 }
 
 function draw() {
-    image(backgroundSprite,0,0,width,height);
+    image(backgroundSprite,width/2,height/2,width,height);
 
     //spawn clouds
     for(let cloud of clouds){
@@ -54,13 +57,27 @@ function draw() {
 
     //spawn buildings
     for(let building of buildings){
-        building.lowerTowerX-=8*(deltaTime/40);
-        building.upperTowerX-=8*(deltaTime/40);
-        building.upperStrikeZoneX-=8*(deltaTime/40);
-        building.lowerStrikeZoneX-=8*(deltaTime/40);
-        fill(0,150,255);
-        image(buildingUpperSprite,building.upperTowerX,building.upperTowerY,width/5);
-        image(buildingLowerSprite,building.lowerTowerX,building.lowerTowerY,width/5);
+        building.x1-=8*(deltaTime/40);
+        building.x2-=8*(deltaTime/40);
+        building.uszx1-=8*(deltaTime/40);
+        building.uszx2-=8*(deltaTime/40);
+        building.lszx1-=8*(deltaTime/40);
+        building.lszx2-=8*(deltaTime/40);
+        //fill(255,255,255);
+        //rect(width/2,height/2,width/2,height-height/3);
+        fill(255,0,0);
+        //rect(width/2,height/6,width/3,height/4);
+        //rect(width/2,height-height/6,width/3,height/4);
+        rect(building.x1,building.y1+height/9+715/2,215/2);
+
+        fill(0,255,0);
+        rect(building.uszx1,building.uszy1,215/2);
+        rect(building.uszx2,building.uszy2,215/2);
+        rect(building.lszx1,building.lszy1,215/2);
+        rect(building.lszx2,building.lszy2,215/2);
+
+        image(buildingUpperSprite,building.x1,building.y1,width/5);
+        image(buildingLowerSprite,building.x2,building.y2,width/5);
     }
     if(framebuildingSpawnRate%210 == 0){
         createbuilding();
@@ -98,7 +115,7 @@ function draw() {
 
         //check for collisions
         for(let building of buildings){
-            if(dist(width/5,player.playerHeight,building.upperStrikeZoneX,building.upperStrikeZoneY)<85||dist(width/5,player.playerHeight,building.lowerStrikeZoneX,building.lowerStrikeZoneY)<100){
+            if(dist(width/5,player.playerHeight,building.uszx1,building.uszy1)<80||dist(width/5,player.playerHeight,building.lszx1,building.lszy1)<80||dist(width/5,player.playerHeight,building.uszx2,building.uszy2)<80||dist(width/5,player.playerHeight,building.lszx2,building.lszy2)<80){
                 players.splice(players.indexOf(player),1);
             }
         }
@@ -118,9 +135,9 @@ function draw() {
     //increment score
     for(let building of buildings){
         for(let player of players){
-            if(width/5 > building.upperTowerX+100&&building.scorePoint!=0){
+            if(width/5 > building.x1 && player.lastBuildingCrossed < building.no){
                 player.score+=1;
-                building.scorePoint--;
+                player.lastBuildingCrossed = building.no;
             }
         }
     }
@@ -132,19 +149,25 @@ function draw() {
 }
 
 function createbuilding(){
-    let y = random(50,height-50);
+    let y = random(height/6,height-height/6);
+    let x = width+500;
     let building = {
-        upperTowerX:width+100,
-        upperTowerY:y-750,
-        lowerTowerX:width+100,
-        lowerTowerY:y+125,
-        upperStrikeZoneX:width+172,
-        upperStrikeZoneY:y-750+775-width/5,
-        lowerStrikeZoneX:width+172,
-        lowerStrikeZoneY:y+125+230-width/5,
-        scorePoint:players.length
+        no:buildingNo,
+        x1:x,
+        x2:x,
+        y1:(y-height/9)-715/2,
+        y2:(y+height/9)+715/2,
+        uszx1:x,
+        uszy1:y-height/2-height/12,
+        uszx2:x,
+        uszy2:y-height/3.5,
+        lszx1:x,
+        lszy1:y+height/3.5,
+        lszx2:x,
+        lszy2:y+height/2+height/12,
     }
     buildings.push(building);
+    buildingNo++;
 }
 
 function createPlayers(num = 1){
@@ -155,7 +178,8 @@ function createPlayers(num = 1){
             score:0,
             playerHeight:random(100,height-100),
             isJumping:0,
-            frameJumpRate:0
+            frameJumpRate:0,
+            lastBuildingCrossed:-1
         }
         players.push(player);
     }
