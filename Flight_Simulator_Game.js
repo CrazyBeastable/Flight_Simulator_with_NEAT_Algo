@@ -63,18 +63,19 @@ function draw() {
         building.uszx2-=8*(deltaTime/40);
         building.lszx1-=8*(deltaTime/40);
         building.lszx2-=8*(deltaTime/40);
+
+        //hit boxes
         //fill(255,255,255);
         //rect(width/2,height/2,width/2,height-height/3);
-        fill(255,0,0);
+        // fill(255,0,0);
         //rect(width/2,height/6,width/3,height/4);
         //rect(width/2,height-height/6,width/3,height/4);
-        rect(building.x1,building.y1+height/9+715/2,215/2);
-
-        fill(0,255,0);
-        rect(building.uszx1,building.uszy1,215/2);
-        rect(building.uszx2,building.uszy2,215/2);
-        rect(building.lszx1,building.lszy1,215/2);
-        rect(building.lszx2,building.lszy2,215/2);
+        // rect(building.x1,building.y1+height/9+715/2,215/2);
+        // fill(0,255,0);
+        // rect(building.uszx1,building.uszy1,215/2);
+        // rect(building.uszx2,building.uszy2,215/2);
+        // rect(building.lszx1,building.lszy1,215/2);
+        // rect(building.lszx2,building.lszy2,215/2);
 
         image(buildingUpperSprite,building.x1,building.y1,width/5);
         image(buildingLowerSprite,building.x2,building.y2,width/5);
